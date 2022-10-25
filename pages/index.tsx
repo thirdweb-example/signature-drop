@@ -1,40 +1,21 @@
-import {
-  useAddress,
-  useMetamask,
-  useSignatureDrop,
-  useNetwork,
-  useNetworkMismatch,
-} from "@thirdweb-dev/react";
-import {
-  ChainId,
-  SignedPayload721WithQuantitySignature,
-} from "@thirdweb-dev/sdk";
+import { useAddress, useContract, Web3Button } from "@thirdweb-dev/react";
+import { SignedPayload721WithQuantitySignature } from "@thirdweb-dev/sdk";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 
+const signatureDropAddress = "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2";
+
 const Home: NextPage = () => {
   const address = useAddress();
-  const connectWithMetamask = useMetamask();
-  const isMismatch = useNetworkMismatch();
-  const [, switchNetwork] = useNetwork();
 
-  const signatureDrop = useSignatureDrop(
-    "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2"
+  const { contract: signatureDrop } = useContract(
+    signatureDropAddress,
+    "signature-drop"
   );
 
   async function claim() {
-    if (!address) {
-      connectWithMetamask();
-      return;
-    }
-
-    if (isMismatch) {
-      switchNetwork?.(ChainId.Goerli);
-      return;
-    }
-
     try {
-      const tx = await signatureDrop?.claimTo(address, 1);
+      const tx = await signatureDrop?.claim(1);
       alert(`Succesfully minted NFT!`);
     } catch (error: any) {
       alert(error?.message);
@@ -42,16 +23,6 @@ const Home: NextPage = () => {
   }
 
   async function claimWithSignature() {
-    if (!address) {
-      connectWithMetamask();
-      return;
-    }
-
-    if (isMismatch) {
-      switchNetwork && switchNetwork(ChainId.Goerli);
-      return;
-    }
-
     const signedPayloadReq = await fetch(`/api/generate-mint-signature`, {
       method: "POST",
       body: JSON.stringify({
@@ -100,51 +71,45 @@ const Home: NextPage = () => {
         still claim using the regular claim function.
       </p>
 
-      {address ? (
-        <div className={styles.nftBoxGrid}>
-          {/* Mint a new NFT */}
-          <div
-            className={styles.optionSelectBox}
-            role="button"
-            onClick={() => claim()}
-          >
-            <img
-              src={`/icons/drop.webp`}
-              alt="drop"
-              className={styles.cardImg}
-            />
-            <h2 className={styles.selectBoxTitle}>Claim NFT</h2>
-            <p className={styles.selectBoxDescription}>
-              Use the normal <code>claim</code> function to mint an NFT under
-              the conditions of the claim phase.
-            </p>
-          </div>
+      <div className={styles.nftBoxGrid}>
+        <div className={styles.optionSelectBox}>
+          <img src={`/icons/drop.webp`} alt="drop" className={styles.cardImg} />
+          <h2 className={styles.selectBoxTitle}>Claim NFT</h2>
+          <p className={styles.selectBoxDescription}>
+            Use the normal <code>claim</code> function to mint an NFT under the
+            conditions of the claim phase.
+          </p>
 
-          <div
-            className={styles.optionSelectBox}
-            role="button"
-            onClick={() => claimWithSignature()}
+          <Web3Button
+            contractAddress={signatureDropAddress}
+            action={() => claim()}
+            colorMode="dark"
           >
-            <img
-              src={`/icons/analytics.png`}
-              alt="signature-mint"
-              className={styles.cardImg}
-            />
-            <h2 className={styles.selectBoxTitle}>Mint with Signature</h2>
-            <p className={styles.selectBoxDescription}>
-              Check if you are eligible to mint an NFT for free, by using
-              signature-based minting.
-            </p>
-          </div>
+            Claim
+          </Web3Button>
         </div>
-      ) : (
-        <button
-          className={styles.mainButton}
-          onClick={() => connectWithMetamask()}
-        >
-          Connect Wallet
-        </button>
-      )}
+
+        <div className={styles.optionSelectBox}>
+          <img
+            src={`/icons/analytics.png`}
+            alt="signature-mint"
+            className={styles.cardImg}
+          />
+          <h2 className={styles.selectBoxTitle}>Mint with Signature</h2>
+          <p className={styles.selectBoxDescription}>
+            Check if you are eligible to mint an NFT for free, by using
+            signature-based minting.
+          </p>
+
+          <Web3Button
+            contractAddress={signatureDropAddress}
+            action={() => claimWithSignature()}
+            colorMode="dark"
+          >
+            Claim With Signature
+          </Web3Button>
+        </div>
+      </div>
     </div>
   );
 };

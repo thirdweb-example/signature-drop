@@ -10,8 +10,9 @@ export default async function generateMintSignature(
 
   // Get the Early Access NFT Edition Drop contract
   const polygonSDK = new ThirdwebSDK("polygon");
-  const earlyAccessNfts = polygonSDK.getEditionDrop(
-    "0xa9e893cc12026a2f6bd826fdb295eac9c18a7e88"
+  const earlyAccessNfts = await polygonSDK.getContract(
+    "0xa9e893cc12026a2f6bd826fdb295eac9c18a7e88",
+    'edition-drop'
   );
 
   // Check to see if the wallet address has an early access NFT
@@ -32,8 +33,9 @@ export default async function generateMintSignature(
     process.env.PRIVATE_KEY as string,
     "goerli"
   );
-  const signatureDrop = goerliSDK.getSignatureDrop(
-    "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2"
+  const signatureDrop = await goerliSDK.getContract(
+    "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2",
+    'signature-drop'
   );
 
   // If the user has an early access NFT, generate a mint signature
