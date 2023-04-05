@@ -37,12 +37,12 @@ Let's explore the key areas of the application and how the code works.
 We wrap our application in the `ThirdwebProvider` component in the [\_app.tsx](./pages/_app.tsx) file.
 
 ```jsx
-// This is the chainId your dApp will work on.
-const activeChainId = ChainId.Goerli;
+// This is the chain your dApp will work on.
+const activeChain = "goerli";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ThirdwebProvider desiredChainId={activeChainId}>
+    <ThirdwebProvider activeChain={activeChain}>
       <Component {...pageProps} />
       <ThirdwebGuideFooter />
     </ThirdwebProvider>
