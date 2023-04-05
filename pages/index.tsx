@@ -2,6 +2,7 @@ import { useAddress, useContract, Web3Button } from "@thirdweb-dev/react";
 import { SignedPayload721WithQuantitySignature } from "@thirdweb-dev/sdk";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
+import Image from "next/image";
 
 const signatureDropAddress = "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2";
 
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
   }
 
   async function claimWithSignature() {
-    const signedPayloadReq = await fetch(`/api/generate-mint-signature`, {
+    const signedPayloadReq = await fetch("/api/generate-mint-signature", {
       method: "POST",
       body: JSON.stringify({
         address: address,
@@ -73,7 +74,13 @@ const Home: NextPage = () => {
 
       <div className={styles.nftBoxGrid}>
         <div className={styles.optionSelectBox}>
-          <img src={`/icons/drop.webp`} alt="drop" className={styles.cardImg} />
+          <Image
+            src="/icons/drop.webp"
+            alt="drop"
+            className={styles.cardImg}
+            height={42}
+            width={42}
+          />
           <h2 className={styles.selectBoxTitle}>Claim NFT</h2>
           <p className={styles.selectBoxDescription}>
             Use the normal <code>claim</code> function to mint an NFT under the
@@ -83,15 +90,17 @@ const Home: NextPage = () => {
           <Web3Button
             contractAddress={signatureDropAddress}
             action={() => claim()}
-            colorMode="dark"
+            theme="dark"
           >
             Claim
           </Web3Button>
         </div>
 
         <div className={styles.optionSelectBox}>
-          <img
-            src={`/icons/analytics.png`}
+          <Image
+            width={42}
+            height={42}
+            src="/icons/analytics.png"
             alt="signature-mint"
             className={styles.cardImg}
           />
@@ -104,7 +113,7 @@ const Home: NextPage = () => {
           <Web3Button
             contractAddress={signatureDropAddress}
             action={() => claimWithSignature()}
-            colorMode="dark"
+            theme="dark"
           >
             Claim With Signature
           </Web3Button>
