@@ -3,20 +3,18 @@ import { SignedPayload721WithQuantitySignature } from "@thirdweb-dev/sdk";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 import Image from "next/image";
-
-const signatureDropAddress = "0xb90a18e9270d44F6e7D06e5Eac32C6Ea881CCaB2";
+import { SIGNATURE_DROP_ADDRESS } from "../consts";
 
 const Home: NextPage = () => {
   const address = useAddress();
-
   const { contract: signatureDrop } = useContract(
-    signatureDropAddress,
+    SIGNATURE_DROP_ADDRESS,
     "signature-drop"
   );
 
   async function claim() {
     try {
-      const tx = await signatureDrop?.claim(1);
+      await signatureDrop?.claim(1);
       alert(`Succesfully minted NFT!`);
     } catch (error: any) {
       alert(error?.message);
@@ -31,21 +29,16 @@ const Home: NextPage = () => {
       }),
     });
 
-    console.log(signedPayloadReq);
-
     if (signedPayloadReq.status === 400) {
-      alert(
+      return alert(
         "Looks like you don't own an early access NFT :( You don't qualify for the free mint."
       );
-      return;
     } else {
       try {
         const signedPayload =
           (await signedPayloadReq.json()) as SignedPayload721WithQuantitySignature;
 
-        console.log(signedPayload);
-
-        const nft = await signatureDrop?.signature.mint(signedPayload);
+        await signatureDrop?.signature.mint(signedPayload);
 
         alert(`Succesfully minted NFT!`);
       } catch (error: any) {
@@ -88,7 +81,7 @@ const Home: NextPage = () => {
           </p>
 
           <Web3Button
-            contractAddress={signatureDropAddress}
+            contractAddress={SIGNATURE_DROP_ADDRESS}
             action={() => claim()}
             theme="dark"
           >
@@ -111,7 +104,7 @@ const Home: NextPage = () => {
           </p>
 
           <Web3Button
-            contractAddress={signatureDropAddress}
+            contractAddress={SIGNATURE_DROP_ADDRESS}
             action={() => claimWithSignature()}
             theme="dark"
           >
